@@ -34,8 +34,7 @@ int main(int argc,char* argv[]){
 pipe_init(int size){
   int i;
   for(i=0;i<size;i++){
-    fifo[i]=0;
-    
+    //fifo[i]=0;    
   }
 }
 void pipe_write(char c){
