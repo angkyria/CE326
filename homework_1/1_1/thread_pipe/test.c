@@ -40,7 +40,7 @@ void *pipe_write(){
 
 		printf("pipe write %s\n", ch);
 		anamoni=1;
-		sleep(3);
+		//sleep(3);
 	}
 }
 
