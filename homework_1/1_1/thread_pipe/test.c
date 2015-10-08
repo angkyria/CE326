@@ -3,50 +3,54 @@
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
-#define MAX_BUF 30
+#define MAX_BUF 10
 int fd[2];
-int anamoni=0;
+int i_read, i_write;
+
 
 void *pipe_read(){
 	char ch[MAX_BUF];
 	int nread;
         while(1){
-		memset(ch,0,sizeof(ch));
-		while(anamoni==0){};
-		nread = read(fd[0],ch,sizeof(ch));
+		sleep(3);
+		while(i_read==i_write){printf("Pipe buf is empty\n");sleep(5);}
+		nread = read(fd[0],ch,sizeof(char)*MAX_BUF);
+		//lseek(fd[0],0,SEEK_SET);
 		if(nread == -1){
 		        perror("fail read");
 		        exit(3);
 	        }
-		printf("Read pipeRead char %s\n", ch);
-		sleep(3);
-		anamoni=0;
+		printf("Read pipeRead char %c gramena sto solina  %s\n", ch[i_read], ch);
+		i_read = (i_read+1)%MAX_BUF;
 	}
 }
 
 void *pipe_write(){
-	int nwrite, i;
+	int nwrite;
 	char ch[MAX_BUF];
-	
-	while(1){
+	char x;
 
- 		memset(ch, 0, sizeof(ch));
-		scanf("%s", ch); 
- 		nwrite=write(fd[1],ch,strlen(ch));
+	while(1){
+		
+		while(i_read == ( (i_write+1)%MAX_BUF )){printf("Pipe buf is full\n");sleep(3);}
+		scanf(" %c", &x);
+		ch[i_write]=x;
+ 		nwrite=write(fd[1],ch,sizeof(char)*MAX_BUF);
+		//lseek(fd[1],0,SEEK_SET);
 		if(nwrite==-1){
 			perror("fail write");
 			exit(2);
 		}
-
+                i_write= (i_write+1)%MAX_BUF;
 		printf("pipe write %s\n", ch);
-		anamoni=1;
-		//sleep(3);
+		//sleep(1);
 	}
 }
 
 int main(int argc, char *argv[]){
  	pthread_t pipeRead, pipeWrite;
-	
+ 	i_read = 0;
+	i_write = 0;           
 	if(pipe(fd)<0){perror("fail pipe"); exit(1);}	
 
 	pthread_create(&pipeWrite,NULL,pipe_write,NULL);
