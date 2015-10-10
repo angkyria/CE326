@@ -15,28 +15,23 @@ int main(int argc,char* argv[]){
  
   int array_size;
   int i;
-  char fifo[SIZE];
+  int *fifo_root=NULL;
   
   printf("enter size of array: \n");
   scanf ("%d",&array_size );
   
-  pipe_init(array_size);
-  
-  printf("enter data: \n");
-  scanf ("\t%s",str );
-  
-  for(i=0;str[i]!='\0';i++){
-    pipe_write(str[i]);
-  }
-  
+  fifo_root=pipe_init(array_size);
+  printf("%d",fifo_root);
+
   return 0;
 }
 pipe_init(int size){
-  int i;
-  for(i=0;i<size;i++){
-    //fifo[i]=0;    
-  }
+  char *array;
+  array=(char *)malloc(size*sizeof(char));
+  return *array;
+
 }
+
 void pipe_write(char c){
   
 }
