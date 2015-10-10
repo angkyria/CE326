@@ -8,6 +8,7 @@
 
 int fd[2];
 int i_read, i_write, pipe_size;
+int pipe_wait = 0;
 
 void pipe_init(int size); //Init pipe prototype
 void *pipe_read(); //Read pipe prototype
@@ -38,16 +39,21 @@ int main(int argc, char *argv[]){
 	char *ch=NULL;
 	int nread;
 	ch = (char *)malloc(sizeof(char)*pipe_size);
+	printf("Read pipe start\n");
         while(1){
-		sleep(3);
-		while(i_read==i_write){printf("Pipe buf is empty\n");sleep(5);}
+		while(i_read==i_write){
+			printf("Pipe buf is empty\n");
+			while(pipe_wait==0){}
+		}
+		
 		nread = read(fd[0],ch,sizeof(char)*pipe_size);
 		//lseek(fd[0],0,SEEK_SET);
 		if(nread == -1){
-		        perror("fail read");
+		        perror("Fail read");
 		        exit(3);
 	        }
-		printf("Read pipeRead char %c gramena sto solina  %s\n", ch[i_read], ch);
+		pipe_wait = 0;
+		printf("Pipe read char %c n", ch[i_read]);
 		i_read = (i_read+1)%pipe_size;
 	}
 } 
@@ -58,21 +64,23 @@ int main(int argc, char *argv[]){
 	char x;
         ch = (char *)malloc(sizeof(char)*pipe_size);
 	for(i=0;i<pipe_size;i++)ch[i]='\0';
-
+        printf("Write buf strat\n");
 	while(1){
 		
-		while(i_read == ( (i_write+1)%pipe_size )){printf("Pipe buf is full\n");sleep(3);}
+		while(i_read == ( (i_write+1)%pipe_size )){
+			printf("Pipe buf is full\n");
+			pipe_wait = 1;
+			while(pipe_wait==1){}
+		}
 		scanf(" %c", &x);
 		ch[i_write]=x;
  		nwrite=write(fd[1],ch,sizeof(char)*pipe_size);
 		//lseek(fd[1],0,SEEK_SET);
 		if(nwrite==-1){
-			perror("fail write");
+			perror("Fail write");
 			exit(2);
 		}
                 i_write= (i_write+1)%pipe_size;
-		printf("pipe write %s\n", ch);
-		//sleep(1);
 	}
 } 
 
@@ -84,8 +92,8 @@ void pipe_init(int size){
 	i_write = 0;
 	pipe_size = size;
         if (pipe(fd)<0){perror("Fail create pipe");exit(1);}
-        if (fcntl(fd[0],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(2);}
-        if (fcntl(fd[1],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(3);}
+       if (fcntl(fd[0],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(2);}
+       if (fcntl(fd[1],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(3);}
          
 	
 }
