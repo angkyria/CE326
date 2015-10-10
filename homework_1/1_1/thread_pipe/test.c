@@ -26,9 +26,11 @@ void *pipe_read(){
 }
 
 void *pipe_write(){
-	int nwrite;
+	int nwrite,i;
 	char ch[MAX_BUF];
 	char x;
+
+	for(i=0;i<MAX_BUF;i++)ch[i]='\0';
 
 	while(1){
 		
