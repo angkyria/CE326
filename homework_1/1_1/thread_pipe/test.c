@@ -35,8 +35,9 @@ int main(int argc, char *argv[]){
 }
 
  void *pipe_read(){
-	char *ch;
+	char *ch=NULL;
 	int nread;
+	ch = (char *)malloc(sizeof(char)*pipe_size);
         while(1){
 		sleep(3);
 		while(i_read==i_write){printf("Pipe buf is empty\n");sleep(5);}
@@ -53,9 +54,9 @@ int main(int argc, char *argv[]){
 
  void *pipe_write(){
 	int nwrite,i;
-	char *ch;
+	char *ch=NULL;
 	char x;
-
+        ch = (char *)malloc(sizeof(char)*pipe_size);
 	for(i=0;i<pipe_size;i++)ch[i]='\0';
 
 	while(1){
