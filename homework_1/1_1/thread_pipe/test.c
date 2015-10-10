@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
 		        exit(3);
 	        }
 		pipe_wait = 0;
-		printf("Pipe read char %c n", ch[i_read]);
+		printf("Pipe read char %c \n", ch[i_read]);
 		i_read = (i_read+1)%pipe_size;
 	}
 } 
@@ -80,6 +80,7 @@ int main(int argc, char *argv[]){
 			perror("Fail write");
 			exit(2);
 		}
+		pipe_wait=1;
                 i_write= (i_write+1)%pipe_size;
 	}
 } 
@@ -92,8 +93,8 @@ void pipe_init(int size){
 	i_write = 0;
 	pipe_size = size;
         if (pipe(fd)<0){perror("Fail create pipe");exit(1);}
-       if (fcntl(fd[0],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(2);}
-       if (fcntl(fd[1],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(3);}
+        if (fcntl(fd[0],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(2);}
+        if (fcntl(fd[1],F_SETPIPE_SZ, sizeof(char)*size)<0){perror("Set pipe size failed.");exit(3);}
          
 	
 }
