@@ -40,20 +40,34 @@ int main(int argc, char *argv[]){
 	ch = (char *)malloc(sizeof(char)*pipe_size);
 	printf("Read pipe start\n");
         while(1){
-		while(i_read==i_write){
-			printf("Pipe buf is empty\n");
-			pipe_wait=0;
-			while(pipe_wait==0){}
-		}
+		if(pipe_size==1){
+			if(pipe_wait==0){
+                        	printf("Pipe buf is empty\n");
+				while(pipe_wait==0){}
+			}
+			nread = read(fd[0],ch,sizeof(char)*pipe_size);
+			if(nread == -1){
+		        	perror("Fail read");
+		        	exit(3);
+	        	}
+			pipe_wait = 0;
+			printf("Pipe read char %s \n", ch); 
+		}else{ 
+			while(i_read==i_write){
+				printf("Pipe buf is empty\n");
+				pipe_wait=0;
+				while(pipe_wait==0){}
+			}
 		
-		nread = read(fd[0],ch,sizeof(char)*pipe_size);
-		if(nread == -1){
-		        perror("Fail read");
-		        exit(3);
-	        }
-		pipe_wait = 0;
-		printf("Pipe read char %c \n", ch[i_read]);
-		i_read = (i_read+1)%pipe_size;
+			nread = read(fd[0],ch,sizeof(char)*pipe_size);
+			if(nread == -1){
+		        	perror("Fail read");
+		        	exit(3);
+	        	}
+			pipe_wait = 0;
+			printf("Pipe read char %c \n", ch[i_read]);
+			i_read = (i_read+1)%pipe_size; 
+		}
 	}
 } 
 
@@ -66,20 +80,39 @@ int main(int argc, char *argv[]){
         printf("Write buf start\n");
 	while(1){
 		
-		while(i_read == ( (i_write+1)%pipe_size )){
-			printf("Pipe buf is full\n");
-			pipe_wait = 1;
-			while(pipe_wait==1){}
+		if(pipe_size==1){
+
+                       if(pipe_wait==1){
+			       printf("Pipe buf is full\n");
+			       while(pipe_wait==1){}
+		       }
+                        scanf(" %c", &x);
+			ch=&x;
+ 			nwrite=write(fd[1],ch,sizeof(char)*pipe_size);
+			if(nwrite==-1){
+				perror("Fail write");
+				exit(2);
+			}
+			pipe_wait=1; 
+
+		}else{
+		
+			while(i_read == ( (i_write+1)%pipe_size )){
+				printf("Pipe buf is full\n");
+				pipe_wait = 1;
+				while(pipe_wait==1){}
+			}
+			scanf(" %c", &x);
+			ch[i_write]=x;
+ 			nwrite=write(fd[1],ch,sizeof(char)*pipe_size);
+			if(nwrite==-1){
+				perror("Fail write");
+				exit(2);
+			}
+			pipe_wait=1;
+                	i_write= (i_write+1)%pipe_size;
+
 		}
-		scanf(" %c", &x);
-		ch[i_write]=x;
- 		nwrite=write(fd[1],ch,sizeof(char)*pipe_size);
-		if(nwrite==-1){
-			perror("Fail write");
-			exit(2);
-		}
-		pipe_wait=1;
-                i_write= (i_write+1)%pipe_size;
 	}
 } 
 
