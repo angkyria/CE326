@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,11 +42,11 @@ int main(int argc, char *argv[]){
         while(1){
 		while(i_read==i_write){
 			printf("Pipe buf is empty\n");
+			pipe_wait=0;
 			while(pipe_wait==0){}
 		}
 		
 		nread = read(fd[0],ch,sizeof(char)*pipe_size);
-		//lseek(fd[0],0,SEEK_SET);
 		if(nread == -1){
 		        perror("Fail read");
 		        exit(3);
@@ -64,7 +63,7 @@ int main(int argc, char *argv[]){
 	char x;
         ch = (char *)malloc(sizeof(char)*pipe_size);
 	for(i=0;i<pipe_size;i++)ch[i]='\0';
-        printf("Write buf strat\n");
+        printf("Write buf start\n");
 	while(1){
 		
 		while(i_read == ( (i_write+1)%pipe_size )){
@@ -75,7 +74,6 @@ int main(int argc, char *argv[]){
 		scanf(" %c", &x);
 		ch[i_write]=x;
  		nwrite=write(fd[1],ch,sizeof(char)*pipe_size);
-		//lseek(fd[1],0,SEEK_SET);
 		if(nwrite==-1){
 			perror("Fail write");
 			exit(2);
