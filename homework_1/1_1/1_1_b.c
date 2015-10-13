@@ -38,14 +38,15 @@ int main(int argc, char *argv[]){
 }
  
 void pipe_init(int size){
-
+        
+	int i;
+	char x='\0';
         printf("Initialize pipe\n");
-        char x='\0';
         i_read = 0;
 	i_write = 0;
 	pipe_size = size;
        	buffer=(char *)malloc(sizeof(char)*pipe_size);
-       	for(int i=0;i<pipe_size;i++)buffer[i]=x;	
+       	for(i=0;i<pipe_size;i++)buffer[i]=x;	
 	
 }   
 
@@ -74,10 +75,7 @@ void *readT(){
 			printf("Pipe read char: %c\n", x);
 			i_read=(i_read+1)%pipe_size;
 		}
-
 	}
-
-        
 }
 
 void *writeT(){
