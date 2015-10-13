@@ -1,10 +1,6 @@
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <pthread.h>
-#include <unistd.h>
-#include <fcntl.h>
 
 char *buffer;
 int i_read, i_write, pipe_size;
@@ -52,7 +48,7 @@ void pipe_init(int size){
 
 void *readT(){
 
-        int readRes =1;
+    	int readRes =1;
 	char x='\0';
 
 	while(readRes){
@@ -102,7 +98,6 @@ void *writeT(){
 			i_write = (i_write+1)%pipe_size;
 		}
 	}
-
 }
 
  int pipe_read(char *c){
