@@ -5,6 +5,8 @@
 char *buffer;
 int i_read, i_write, pipe_size;
 int pipe_wait = 0;
+int p_close = 0;
+char c_term;
 
 void pipe_init(int size); //Init pipe prototype
 void *readT(); //Read thread prototype
@@ -17,6 +19,7 @@ void pipe_close();      // close prototype
 int main(int argc, char *argv[]){
  	pthread_t pipeRead, pipeWrite;
 	int size;
+	char buf;
 
 	printf("Give the size of pipe buf: ");
 	scanf("%d", &size);
@@ -24,13 +27,16 @@ int main(int argc, char *argv[]){
 		printf("Give number>0\n");
 		scanf("%d",&size);
 	}
-
+	printf("Give terminate char: ");
+	scanf(" %c", &c_term);
+        while((buf=getchar())!='\n');
         pipe_init(size);  
 
 	pthread_create(&pipeWrite,NULL,writeT,NULL);
 	pthread_create(&pipeRead,NULL,readT,NULL);
 
-	while(1){}
+	while(p_close!=1){}
+	return 0;
 }
  
 void pipe_init(int size){
@@ -67,11 +73,14 @@ void *readT(){
 				while(pipe_wait==0){}
 			}
 			readRes=pipe_read(&x);
+			if(readRes==0)break;
 			pipe_wait=0;
 			printf("Pipe read char: %c\n", x);
 			i_read=(i_read+1)%pipe_size;
 		}
 	}
+	pipe_wait = 2;
+        return NULL;
 }
 
 void *writeT(){
@@ -97,12 +106,22 @@ void *writeT(){
 			pipe_wait=1;
 			i_write = (i_write+1)%pipe_size;
 		}
+
+		if(x==c_term){
+			pipe_close();
+			break;
+		}
 	}
+	return NULL;
 }
 
  int pipe_read(char *c){
 	 *c=buffer[i_read];
-	 return 1;
+	 if(buffer[i_read]==c_term){
+		return 0;
+	 }else{
+		return 1;
+	 }
 	
 } 
 
@@ -112,5 +131,8 @@ void *writeT(){
 } 
 
 void pipe_close(){
+	while(pipe_wait!=2){}
+		free(buffer);
+		p_close=1;
 
 }
