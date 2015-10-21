@@ -18,7 +18,7 @@ void pipe_close();      // close prototype
 
 int main(int argc, char *argv[]){
  	pthread_t pipeRead, pipeWrite;
-	int size;
+	int size, pCread, pCwrite;
 	char buf;
 
 	printf("Give the size of pipe buf: ");
@@ -32,9 +32,16 @@ int main(int argc, char *argv[]){
         while((buf=getchar())!='\n');
         pipe_init(size);  
 
-	pthread_create(&pipeWrite,NULL,writeT,NULL);
-	pthread_create(&pipeRead,NULL,readT,NULL);
-
+	pCwrite=pthread_create(&pipeWrite,NULL,writeT,NULL);
+	if(pCwrite){
+		perror("Fail pthread_create write thread\n");
+		exit(1);
+	}
+	pCread=pthread_create(&pipeRead,NULL,readT,NULL);
+        if(pCread){
+		perror("Fail pthread_create read thread\n");
+		exit(1);
+	}
 	while(p_close!=1){}
 	return 0;
 }

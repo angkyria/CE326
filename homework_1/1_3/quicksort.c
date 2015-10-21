@@ -127,7 +127,8 @@ void *quicksort(void *qs){
        pthread_create(&right_thread, NULL, quicksort, &rpkg);
         
        sleep(1);
-
+       
+       return NULL;
 }      
 
 void swap(int num_array[], int i, int j){
