@@ -31,6 +31,7 @@ int main(int argc, char *argv[]){
 	pthread_create(&pipeRead,NULL,readT,NULL);
 
 	while(1){}
+	return 0;
 }
  
 void pipe_init(int size){

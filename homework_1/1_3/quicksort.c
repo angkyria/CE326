@@ -66,7 +66,7 @@ int main(int argc, char *argv[]){
 
 	print_array(num_array, array_size, 1);
 
-
+    return 0;
 }
 
 
@@ -84,7 +84,7 @@ void print_array(int *array, int array_size, int key){
         	printf("\n");
     	}
     
-    	return;
+    	
 }
 
 
@@ -112,9 +112,13 @@ void *quicksort(void *qs){
 	swap(num_array, left, pivot);
         last_swap_pos=left;
 
-	for(i=left+1;i<=right;i++) if(num_array[i]<num_array[left]) swap(num_array, ++last_swap_pos, i);
-	swap(num_array, left, last_swap_pos);
-
+	for(i=left+1;i<=right;i++) {
+		if(num_array[i]<num_array[left]){ 
+			  swap(num_array, ++last_swap_pos, i);
+		}
+	}
+		swap(num_array, left, last_swap_pos);
+	
        lpkg.num_array=num_array;
        lpkg.left=left;
        lpkg.right=last_swap_pos-1;
@@ -127,7 +131,8 @@ void *quicksort(void *qs){
        pthread_create(&right_thread, NULL, quicksort, &rpkg);
         
        sleep(1);
-
+       
+     return NULL;
 }      
 
 void swap(int num_array[], int i, int j){
