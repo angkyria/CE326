@@ -50,7 +50,6 @@ extern void mandel_Calc(mandel_Pars *pars, int maxIterations, int res[]) {
     }
     im = im + pars->imInc;
   }
-  k++;
 }
 
 void *calc(void *worker){

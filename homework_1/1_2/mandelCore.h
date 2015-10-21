@@ -12,7 +12,8 @@ extern void mandel_Calc(mandel_Pars *pars, int maxIterations, int res[]);
 
 typedef struct{
    mandel_Pars *pars;
-   int res[];
+   int *res;
    int maxIterations;
 }work;
 
+void *calc(void *);
