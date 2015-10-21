@@ -174,6 +174,10 @@ int main(int argc, char *argv[]) {
     k=0;
     for(i=0;i<nofslices;i++){
 	
+	worker[i]->pars=slices[i];
+	worker[i]->maxIterations=maxIterations;
+	worker[i]->res=res[i*slices[i].imSteps*slices[i].reSteps];
+	
 	pthread_create(&tWorker[i],NULL,calc,(void *)&worker);
  	for (j=0; j<slices[i].imSteps; j++) {
 		for (x=0; x<slices[i].reSteps; x++) {
