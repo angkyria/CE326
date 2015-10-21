@@ -10,7 +10,9 @@ extern void mandel_Slices(mandel_Pars *pars, int n, mandel_Pars slices[]);
 extern void mandel_Calc(mandel_Pars *pars, int maxIterations, int res[]);
 /* len(res) = pars->reSteps*pars->imSteps */
 
-typede struct{
-   mandel_Pars       ;
+typedef struct{
+   mandel_Pars *pars;
+   int res[];
    int maxIterations;
-}
+}work;
+
