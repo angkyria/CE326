@@ -246,6 +246,8 @@ int main(int argc, char *argv[]) {
 
   /* never reach this point; for cosmetic reasons */
 
+  free(work_status);
+  free(thread_workers);
   free(slices);
   free(res);
 
