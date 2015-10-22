@@ -131,7 +131,6 @@ void *workers(void *i){
 
         mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
         work_status[j]=1;
-        printf("thread no. %d starts succefull\n", j);
     }
 
 
@@ -211,12 +210,12 @@ int main(int argc, char *argv[]) {
     y=0;
     while(i<nofslices){
 
-        for(j=0;work_status[j]!=1;j++)if((j+1)==nofslices)j=-1;
+        for(k=0;work_status[k]!=1;k++)if((k+1)==nofslices)j=-1;
 
 
-        for(work_status[j]=2, x=0;x<slices[j].imSteps;x++,y++,i++){
-            for(k=0;k<slices[j].reSteps;k++){
-                setColor(pickColor(res[y*slices[j].reSteps+k],maxIterations));
+        for(work_status[k]=2, k=0;x<slices[k].imSteps;k++,y++,i++){
+            for(x=0;x<slices[k].reSteps;x++){
+                setColor(pickColor(res[x*slices[k].reSteps+x],maxIterations));
                 drawPoint(x, y);
             }
         }
