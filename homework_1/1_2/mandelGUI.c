@@ -213,9 +213,9 @@ int main(int argc, char *argv[]) {
         for(k=0;work_status[k]!=1;k++)if((k+1)==nofslices)k=-1;
 
 
-        for(i++, work_status[k]=2, j=0;x<slices[k].imSteps;j++,y++){
+        for(i++, work_status[k]=2, j=0;j<slices[k].imSteps;j++,y++){
             for(x=0;x<slices[k].reSteps;x++){
-                setColor(pickColor(res[x*slices[k].reSteps+x],maxIterations));
+                setColor(pickColor(res[y*slices[k].reSteps+x],maxIterations));
                 drawPoint(x, y);
             }
         }
