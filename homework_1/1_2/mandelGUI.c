@@ -123,6 +123,8 @@ void *workers(void *i){
     int j;
     j=(int)i;
 
+    while (work_status[j]==-1);
+
     while(1){
 
         while((work_status[j]==1)||(work_status[j]==2));
@@ -201,6 +203,8 @@ int main(int argc, char *argv[]) {
     clearWin();
 
     mandel_Slice(&pars,nofslices,slices);
+
+    for(i=0;i<nofslices;i++)work_status[i]=0;
 
     i=0;
     y=0;
