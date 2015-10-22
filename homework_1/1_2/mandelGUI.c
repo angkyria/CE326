@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
   work_status=(int *)malloc(sizeof(int)*nofslices);
   for(i=0;i<nofslices;i++)work_status[i]=-1;
   for(i=0;i<nofslices;i++){
-      thread_status=pthread_create(&thread_workers[i], NULL, workers, i);
+      thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)i);
       if(thread_status){
           perror("Fail create thread\n");
           exit(1);
