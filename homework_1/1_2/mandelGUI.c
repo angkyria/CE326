@@ -121,7 +121,7 @@ int *res, maxIterations, *work_status;
 
 void *workers(void *i){
     int j;
-    j=(int *)i;
+    j=(int)i;
 
     while(1){
 
