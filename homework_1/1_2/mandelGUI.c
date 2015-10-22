@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <pthread.h>
+#include <stdint.h>
 
 #include "mandelCore.h"
 
@@ -121,7 +122,7 @@ int *res, maxIterations, *work_status;
 
 void *workers(void *i){
     int j;
-    j=(int)i;
+    j=(intptr_t)i;
 
     while (work_status[j]==-1);
 
@@ -184,7 +185,7 @@ int main(int argc, char *argv[]) {
   work_status=(int *)malloc(sizeof(int)*nofslices);
   for(i=0;i<nofslices;i++)work_status[i]=-1;
   for(i=0;i<nofslices;i++){
-      thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)i);
+      thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)(intptr_t)i);
       if(thread_status){
           perror("Fail create thread\n");
           exit(1);
@@ -218,7 +219,9 @@ int main(int argc, char *argv[]) {
                 drawPoint(x, y);
             }
         }
-        
+
+        printf("thread no. %d finish draw\n", k);
+
     }
 
     /* get next focus/zoom point */
