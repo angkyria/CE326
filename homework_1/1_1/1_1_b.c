@@ -32,6 +32,7 @@ int main(int argc, char *argv[]){
         while((buf=getchar())!='\n');
         pipe_init(size);  
 
+<<<<<<< HEAD
 	pCwrite=pthread_create(&pipeWrite,NULL,writeT,NULL);
 	if(pCwrite){
 		perror("Fail pthread_create write thread\n");
@@ -42,7 +43,16 @@ int main(int argc, char *argv[]){
 		perror("Fail pthread_create read thread\n");
 		exit(1);
 	}
+=======
+	pthread_create(&pipeWrite,NULL,writeT,NULL);
+	pthread_create(&pipeRead,NULL,readT,NULL);
+
+<<<<<<< HEAD
+	while(1){}
+=======
+>>>>>>> 29ad93c74809351f5844ac3a141febec736ce946
 	while(p_close!=1){}
+>>>>>>> b9d8a11baf7f64b017083e0f98978f4006225a40
 	return 0;
 }
  
