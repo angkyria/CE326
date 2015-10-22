@@ -123,11 +123,9 @@ void *workers(void *i){
     int j;
     j=(int)i;
 
-    while(work_status[j]==-1);
-
     while(1){
 
-        while((work_status[j]==1)||(work_status[j]==2));
+        while(work_status[j]==1);
 
         mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
         work_status[j]=1;
@@ -139,7 +137,7 @@ void *workers(void *i){
 
 int main(int argc, char *argv[]) {
   mandel_Pars pars;
-  int i, j, x, y, k, nofslices, level, thread_status;
+  int i, j, x, y, nofslices, level, thread_status;
   int xoff,yoff;
   long double reEnd,imEnd,reCenter,imCenter;
   pthread_t *thread_workers;
@@ -204,10 +202,8 @@ int main(int argc, char *argv[]) {
 
     mandel_Slice(&pars,nofslices,slices);
 
-    for(i=0;i<nofslices;i++)work_status[i]=0;
-
-    i=0;
     y=0;
+<<<<<<< HEAD
     while(i<nofslices){
 
         for(k=0;work_status[k]!=1;k++)if((k+1)==nofslices)j=-1;
@@ -222,6 +218,8 @@ int main(int argc, char *argv[]) {
     }
 
     /*y=0;
+=======
+>>>>>>> parent of 939e5bb... slice draw point with threads
     for (i=0; i<nofslices; i++) {
       printf("starting slice nr. %d\n",i+1);
       mandel_Calc(&slices[i],maxIterations,&res[i*slices[i].imSteps*slices[i].reSteps]);
@@ -233,7 +231,7 @@ int main(int argc, char *argv[]) {
         }
         y++;
       }
-  }*/
+    }
 
     /* get next focus/zoom point */
 
