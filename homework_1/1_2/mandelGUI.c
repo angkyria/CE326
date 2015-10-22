@@ -3,6 +3,7 @@
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <pthread.h>
 
 #include "mandelCore.h"
 
@@ -115,15 +116,30 @@ char *pickColor(int v, int maxIterations) {
 }
 
 mandel_Pars *slices;
-int *res;
+int *res, maxIterations, *work_status;
 
+
+void *workers(void *i){
+    int j;
+    j=(int *)i;
+
+    while(1){
+
+        mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
+        work_status[j]=1;
+        printf("thread no. %d starts succefull\n", j);
+    }
+
+
+}
 
 
 int main(int argc, char *argv[]) {
   mandel_Pars pars;
-  int i,j,x,y,nofslices,maxIterations,level;
+  int i, j, x, y, nofslices, level, thread_status;
   int xoff,yoff;
   long double reEnd,imEnd,reCenter,imCenter;
+  pthread_t *thread_workers;
 
   printf("\n");
   printf("This program starts by drawing the default Mandelbrot region\n");
@@ -155,9 +171,22 @@ int main(int argc, char *argv[]) {
   while (WinH % nofslices != 0) { nofslices++;}
 
   /* allocate slice parameter and result arrays */
-  
+
   slices = (mandel_Pars *) malloc(sizeof(mandel_Pars)*nofslices);
   res = (int *) malloc(sizeof(int)*pars.reSteps*pars.imSteps);
+
+
+  //workers init
+  thread_workers = (pthread_t*)malloc(sizeof(pthread_t)*nofslices);
+  work_status=(int *)malloc(sizeof(int)*nofslices);
+  for(i=0;i<nofslices;i++)work_status[i]=-1;
+  for(i=0;i<nofslices;i++){
+      thread_status=pthread_create(&thread_workers[i], NULL, workers, i);
+      if(thread_status){
+          perror("Fail create thread\n");
+          exit(1);
+      }
+  }
 
   /* open window for drawing results */
 
