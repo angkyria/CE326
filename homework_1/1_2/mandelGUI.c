@@ -125,7 +125,7 @@ void *workers(void *i){
 
     while(1){
 
-        while(work_status[j]==1)||(work_status[j]==2));
+        while((work_status[j]==1)||(work_status[j]==2));
 
         mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
         work_status[j]=1;
