@@ -212,28 +212,14 @@ int main(int argc, char *argv[]) {
 
         for(k=0;work_status[k]!=1;k++)if((k+1)==nofslices)k=-1;
 
-
         for(i++, work_status[k]=2, j=0;j<slices[k].imSteps;j++,y++){
             for(x=0;x<slices[k].reSteps;x++){
                 setColor(pickColor(res[y*slices[k].reSteps+x],maxIterations));
                 drawPoint(x, y);
             }
         }
+        
     }
-
-    /*y=0;
-    for (i=0; i<nofslices; i++) {
-      printf("starting slice nr. %d\n",i+1);
-      mandel_Calc(&slices[i],maxIterations,&res[i*slices[i].imSteps*slices[i].reSteps]);
-      printf("done\n");
-      for (j=0; j<slices[i].imSteps; j++) {
-	for (x=0; x<slices[i].reSteps; x++) {
-          setColor(pickColor(res[y*slices[i].reSteps+x],maxIterations));
-          drawPoint(x,y);
-        }
-        y++;
-      }
-  }*/
 
     /* get next focus/zoom point */
 
