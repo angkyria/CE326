@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
         //for(k=0;work_status[k]!=1;k++)if((k+1)==nofslices)k=-1;//wait util anyone worker finsh his calc
         pthread_mutex_lock(&work_status[k]);
         //start drawing
-        for(k++, i++, j=0;j<slices[k].imSteps;j++,y++){
+        for(i++, j=0;j<slices[k].imSteps;j++,y++){
             for(x=0;x<slices[k].reSteps;x++){
                 setColor(pickColor(res[y*slices[k].reSteps+x],maxIterations));
                 drawPoint(x, y);
@@ -228,7 +228,7 @@ int main(int argc, char *argv[]) {
         }
 
         printf("thread no. %d finish draw\n", k);
-
+        k++;
     }
 
     /* get next focus/zoom point */
