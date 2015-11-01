@@ -186,8 +186,8 @@ int main(int argc, char *argv[]) {
   //workers init
   thread_workers = (pthread_t*)malloc(sizeof(pthread_t)*nofslices);
   work_status = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t)*nofslices);
-  work_status=(int *)malloc(sizeof(int)*nofslices);
-  for(i=0;i<nofslices;i++)work_status[i]=-1;
+  //work_status=(int *)malloc(sizeof(int)*nofslices);
+  //for(i=0;i<nofslices;i++)work_status[i]=-1;
   for(i=0;i<nofslices;i++){
       pthread_mutex_init(&work_status[i], NULL);
       thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)(intptr_t)i);
