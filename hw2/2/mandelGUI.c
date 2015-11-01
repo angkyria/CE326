@@ -203,6 +203,7 @@ int main(int argc, char *argv[]) {
   openWin(argv[0], WinW, WinH);
 
   level = 1;
+  thread_status=0;
 
   while (1) {
 
@@ -210,7 +211,7 @@ int main(int argc, char *argv[]) {
 
     mandel_Slice(&pars,nofslices,slices);
 
-    for(i=0;i<nofslices;i++)pthread_mutex_unlock(&work_status[i]);//give premision to the workers threads start calc
+    if(thread_status==0)for(thread_status=1, i=0;i<nofslices;i++)pthread_mutex_unlock(&work_status[i]);//give premision to the workers threads start calc
 
     i=0;
     y=0;
@@ -226,7 +227,7 @@ int main(int argc, char *argv[]) {
                 drawPoint(x, y);
             }
         }
-
+        pthread_mutex_unlock(&work_status[k]);
         printf("thread no. %d finish draw\n", k);
         k++;
     }
