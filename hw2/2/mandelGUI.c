@@ -132,7 +132,7 @@ void *workers(void *i){
         pthread_mutex_lock(&work_status[j]);
      
         mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
-        work_status[j]=1;
+        //work_status[j]=1;
 	pthread_mutex_unlock(&work_status[j]);
      
     }
