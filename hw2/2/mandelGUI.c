@@ -134,7 +134,8 @@ void *workers(void *i){
 	e=j;
 	if(num_work<=0)pthread_mutex_unlock(&draw);
 	pthread_mutex_unlock(&work_status);
-
+	
+        printf("thread no. %d finish cacl\n", j);
 	 
      
     }
@@ -234,7 +235,6 @@ int main(int argc, char *argv[]) {
                 drawPoint(x, y);
             }
         }
-        printf("thread no. %d finish draw\n", e);
     }
 
     /* get next focus/zoom point */
