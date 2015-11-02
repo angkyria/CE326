@@ -191,7 +191,6 @@ int main(int argc, char *argv[]) {
   //work_status=(int *)malloc(sizeof(int)*nofslices);
   //for(i=0;i<nofslices;i++)work_status[i]=-1;
   for(i=0;i<nofslices;i++){
-      pthread_mutex_init(&work_status[i], NULL);
       thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)(intptr_t)i);
       if(thread_status){
           perror("Fail create thread\n");
@@ -262,7 +261,6 @@ int main(int argc, char *argv[]) {
 
   /* never reach this point; for cosmetic reasons */
 
-  free(work_status);
   free(thread_workers);
   free(slices);
   free(res);
