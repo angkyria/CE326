@@ -124,13 +124,12 @@ void *workers(void *i){
     int j;
     j=(intptr_t)i;
 
-    pthread_mutex_lock(&work_status);
 
     while(1){
 
+        mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
         //while((work_status[j]==1)||(work_status[j]==2));//wait util we want to make calc
         pthread_mutex_lock(&work_status);
-        mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
 	num_work++;
 	e=j;
 	if(num_work<=0)pthread_mutex_unlock(&draw);
@@ -214,7 +213,6 @@ int main(int argc, char *argv[]) {
 
     mandel_Slice(&pars,nofslices,slices);
 
-    if(thread_status==0)for(thread_status=1, i=0;i<nofslices;i++)pthread_mutex_unlock(&work_status);//give premision to the workers threads start calc
     num_work=0;
     i=0;
     y=0;
@@ -236,7 +234,7 @@ int main(int argc, char *argv[]) {
                 drawPoint(x, y);
             }
         }
-        printf("thread no. %d finish draw\n", k);
+        printf("thread no. %d finish draw\n", e);
     }
 
     /* get next focus/zoom point */
