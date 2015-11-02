@@ -117,23 +117,26 @@ char *pickColor(int v, int maxIterations) {
 }
 
 mandel_Pars *slices;
-int *res, maxIterations;
-pthread_mutex_t *work_status;
+int *res, maxIterations, e, num_work;
+pthread_mutex_t work_status, draw;
 
 void *workers(void *i){
     int j;
     j=(intptr_t)i;
 
-    pthread_mutex_lock(&work_status[j]);
+    pthread_mutex_lock(&work_status);
 
     while(1){
 
         //while((work_status[j]==1)||(work_status[j]==2));//wait util we want to make calc
-        pthread_mutex_lock(&work_status[j]);
-     
+        pthread_mutex_lock(&work_status);
         mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
-        //work_status[j]=1;
-	pthread_mutex_unlock(&work_status[j]);
+	num_work++;
+	e=j;
+	if(num_work<=0)pthread_mutex_unlock(&draw);
+	pthread_mutex_unlock(&work_status);
+
+	 
      
     }
 
@@ -185,7 +188,6 @@ int main(int argc, char *argv[]) {
 
   //workers init
   thread_workers = (pthread_t*)malloc(sizeof(pthread_t)*nofslices);
-  work_status = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t)*nofslices);
   //work_status=(int *)malloc(sizeof(int)*nofslices);
   //for(i=0;i<nofslices;i++)work_status[i]=-1;
   for(i=0;i<nofslices;i++){
@@ -196,7 +198,9 @@ int main(int argc, char *argv[]) {
           exit(1);
       }
   }
-
+  pthread_mutex_init(&draw, NULL);
+  pthread_mutex_init(&work_status, NULL);
+      
   /* open window for drawing results */
 
   openDisplay();
@@ -211,25 +215,29 @@ int main(int argc, char *argv[]) {
 
     mandel_Slice(&pars,nofslices,slices);
 
-    if(thread_status==0)for(thread_status=1, i=0;i<nofslices;i++)pthread_mutex_unlock(&work_status[i]);//give premision to the workers threads start calc
-
+    if(thread_status==0)for(thread_status=1, i=0;i<nofslices;i++)pthread_mutex_unlock(&work_status);//give premision to the workers threads start calc
+    num_work=0;
     i=0;
     y=0;
     k=0;
     while(i<nofslices){
-
-        //for(k=0;work_status[k]!=1;k++)if((k+1)==nofslices)k=-1;//wait util anyone worker finsh his calc
-        pthread_mutex_lock(&work_status[k]);
+        
+        pthread_mutex_lock(&work_status);
+	num_work--;
+	if(num_work<0){
+		pthread_mutex_unlock(&work_status);
+		pthread_mutex_lock(&draw);
+		pthread_mutex_lock(&work_status);
+	}
+	pthread_mutex_unlock(&work_status);
         //start drawing
-        for(i++, j=0;j<slices[k].imSteps;j++,y++){
-            for(x=0;x<slices[k].reSteps;x++){
-                setColor(pickColor(res[y*slices[k].reSteps+x],maxIterations));
+        for(i++, j=0;j<slices[e].imSteps;j++,y++){
+            for(x=0;x<slices[e].reSteps;x++){
+                setColor(pickColor(res[y*slices[e].reSteps+x],maxIterations));
                 drawPoint(x, y);
             }
         }
-        pthread_mutex_unlock(&work_status[k]);
         printf("thread no. %d finish draw\n", k);
-        k++;
     }
 
     /* get next focus/zoom point */
