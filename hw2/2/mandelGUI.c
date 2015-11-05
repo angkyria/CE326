@@ -136,7 +136,7 @@ void *workers(void *i){
 	if(num_work<=0)pthread_mutex_unlock(&draw);
 	pthread_mutex_unlock(&work_status);
 	
-        printf("thread no. %d finish cacl\n", j);
+        printf("thread no. %d finish cacl\n", num_work);
 	}
      
     }
