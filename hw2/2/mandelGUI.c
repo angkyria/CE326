@@ -117,7 +117,7 @@ char *pickColor(int v, int maxIterations) {
 }
 
 mandel_Pars *slices;
-int *res, maxIterations, e, num_work;
+int *res, maxIterations, e, num_work, nofslices;
 pthread_mutex_t work_status, draw;
 
 void *workers(void *i){
@@ -127,6 +127,7 @@ void *workers(void *i){
 
     while(1){
 
+	if((nofslices!=num_work) && (num_work>-1)){
         mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
         //while((work_status[j]==1)||(work_status[j]==2));//wait util we want to make calc
         pthread_mutex_lock(&work_status);
@@ -135,8 +136,8 @@ void *workers(void *i){
 	if(num_work<=0)pthread_mutex_unlock(&draw);
 	pthread_mutex_unlock(&work_status);
 	
-        //printf("thread no. %d finish cacl\n", j);
-	 
+        printf("thread no. %d finish cacl\n", j);
+	}
      
     }
 
@@ -146,7 +147,7 @@ void *workers(void *i){
 
 int main(int argc, char *argv[]) {
   mandel_Pars pars;
-  int i, j, x, y, k, nofslices, level, thread_status;
+  int i, j, x, y, k, level, thread_status;
   int xoff,yoff;
   long double reEnd,imEnd,reCenter,imCenter;
   pthread_t *thread_workers;
@@ -207,7 +208,7 @@ int main(int argc, char *argv[]) {
 
   level = 1;
   thread_status=0;
-
+  num_work=-1;
   while (1) {
 
     clearWin();
