@@ -44,9 +44,9 @@ int main(int argc, char *argv[]){
 
 	}while(c!='\n');
 
-	printf("Give the maximum number of cars over the bridge: ");
-	scanf(" %d", &bridge_capacity);
-
+	//printf("Give the maximum number of cars over the bridge: ");
+	//scanf(" %d", &bridge_capacity);
+        bridge_capacity=0;
 	size_of_car_tail = i;
         passed_car = 0;
 	car_on_bridge = 0;
@@ -157,9 +157,9 @@ void car_cross(char direction){
 	car_on_bridge++;
 	car_right_pass++;
 	printf("%c car crossing the bridge\n", direction);
-	if((car_on_bridge=!bridge_capacity) && (curr_dir=='r'))
+	if((car_on_bridge=!RIGHT_PASS) && (curr_dir=='r'))
 		pthread_mutex_unlock(&mtx_r_dir);
-	if((car_on_bridge=!bridge_capacity) && (curr_dir=='l'))
+	if((car_on_bridge=!RIGHT_PASS) && (curr_dir=='l'))
 		pthread_mutex_unlock(&mtx_l_dir);
 	
 }
@@ -211,7 +211,7 @@ void car_leave(char direction){
                  	
 		}
 
-		if(car_on_bridge==bridge_capacity){
+		/*if(car_on_bridge==bridge_capacity){
 
                         printf("Bridge full start empty\n");
 			car_on_bridge=0;
@@ -220,9 +220,9 @@ void car_leave(char direction){
 			else
 				pthread_mutex_unlock(&mtx_r_dir);
 
-		}
+		} */
 
-		if(car_on_bridge!=bridge_capacity){
+		if(car_on_bridge!=RIGHT_PASS){
                          if(curr_dir=='l')
 				pthread_mutex_unlock(&mtx_l_dir);
 			else
@@ -235,7 +235,7 @@ void car_leave(char direction){
 	if(flag==0){
 	
 
- 		 if(car_on_bridge==bridge_capacity){
+ 		 if(car_on_bridge==RIGHT_PASS){
                         printf("Bridge full start empty\n");
 			car_on_bridge=0;
 			if(curr_dir=='l')
