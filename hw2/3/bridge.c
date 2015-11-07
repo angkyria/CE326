@@ -181,17 +181,17 @@ void car_leave(char direction){
 
     if(size_of_left_tail==0){//we dont have cars on left direction
         if(empty_l_tail==0){
-		printf("Only the right side have cars\n");
-		empty_l_tail=1;
-	}
+            if(size_of_rigth_tail!=0)printf("Only the right side have cars\n");
+            empty_l_tail=1;
+        }
         curr_dir='r';
         flag=0;
 
     }else if(size_of_rigth_tail==0){// we dont have cars on right direction
         if(empty_r_tail==0){
-		printf("Only the left side have cars\n");
-		empty_r_tail=1;
-	}
+            if(size_of_left_tail!=0)printf("Only the left side have cars\n");
+            empty_r_tail=1;
+        }
         curr_dir='l';
         flag=0;
 
@@ -221,30 +221,30 @@ void car_leave(char direction){
         }
 
         if(car_on_bridge==bridge_capacity){
-            
+
             printf("Bridge full start empty\n");
             car_on_bridge=0;
             if(curr_dir=='l')
                 pthread_mutex_unlock(&mtx_l_dir);
             else
                 pthread_mutex_unlock(&mtx_r_dir);
-            
+
         }
-        
+
         if(car_on_bridge!=RIGHT_PASS){
 
             if(curr_dir=='l')
                 pthread_mutex_unlock(&mtx_l_dir);
             else
                 pthread_mutex_unlock(&mtx_r_dir);
-            
+
         }
-        
+
     }
-    
+
     if(flag==0){
-        
-        
+
+
         if(car_on_bridge==bridge_capacity){
             printf("Bridge full start empty\n");
             car_on_bridge=0;
