@@ -11,7 +11,7 @@ void car_cross(char direction);
 void car_leave(char direction);
 
 char *car_tail, curr_dir;
-int size_of_car_tail, size_of_left_tail, size_of_rigth_tail, passed_car, priority, bridge_capacity, car_on_bridge, car_right_pass, flag;
+int size_of_car_tail, size_of_left_tail, size_of_rigth_tail, passed_car, priority, bridge_capacity, car_on_bridge, car_right_pass, flag, empty_l_tail, empty_r_tail;
 pthread_mutex_t mtxend, mtx_dir_pri, mtx_r_dir, mtx_l_dir, mtxleave;
 
 int main(int argc, char *argv[]){
@@ -52,6 +52,8 @@ int main(int argc, char *argv[]){
     car_on_bridge = 0;
     car_right_pass = 0;
     priority=0;
+    empty_l_tail=0;
+    empty_r_tail=0;
 
     mtx_status = pthread_mutex_init(&mtxend, NULL);//init mutex end of car tail
     if(mtx_status){
@@ -178,12 +180,18 @@ void car_leave(char direction){
         size_of_left_tail--;
 
     if(size_of_left_tail==0){//we dont have cars on left direction
-        printf("Only the right side have cars\n");
+        if(empty_l_tail==0){
+		printf("Only the right side have cars\n");
+		empty_l_tail=1;
+	}
         curr_dir='r';
         flag=0;
 
     }else if(size_of_rigth_tail==0){// we dont have cars on right direction
-        printf("Only the left side have cars\n");
+        if(empty_r_tail==0){
+		printf("Only the left side have cars\n");
+		empty_r_tail=1;
+	}
         curr_dir='l';
         flag=0;
 
