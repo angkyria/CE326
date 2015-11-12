@@ -236,6 +236,8 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        num_work=0;
+
         /* get next focus/zoom point */
         
         getMouseCoords(&x,&y);
