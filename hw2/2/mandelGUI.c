@@ -117,7 +117,7 @@ char *pickColor(int v, int maxIterations) {
 }
 
 mandel_Pars *slices;
-int *res, maxIterations, *draw_status, num_work, nofslices;
+int *res, maxIterations, *work_status, num_work, nofslices;
 pthread_mutex_t work_status, draw;
 
 void *workers(void *i){
@@ -127,11 +127,11 @@ void *workers(void *i){
 
     while(1){
 
-        if((nofslices >= num_work) && (num_work>-1) && draw_status[j]==0){
+        if((nofslices >= num_work) && (num_work>-1)){
             mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
             pthread_mutex_lock(&work_status);
             num_work++;
-            draw_status[j]=1;
+            e=j;
             if(num_work<=0)pthread_mutex_unlock(&draw);
             pthread_mutex_unlock(&work_status);
 
@@ -145,7 +145,7 @@ void *workers(void *i){
 
 int main(int argc, char *argv[]) {
     mandel_Pars pars;
-    int i, j, x, y, k, e, level, thread_status;
+    int i, j, x, y, k, level, thread_status;
     int xoff,yoff;
     long double reEnd,imEnd,reCenter,imCenter;
     pthread_t *thread_workers;
@@ -183,14 +183,14 @@ int main(int argc, char *argv[]) {
 
     slices = (mandel_Pars *) malloc(sizeof(mandel_Pars)*nofslices);
     res = (int *) malloc(sizeof(int)*pars.reSteps*pars.imSteps);
-    draw_status=(int *)malloc(sizeof(int)*nofslices);
+    work_status=(int *)malloc(sizeof(int)*nofslices);
 
 
     //workers init
     thread_workers = (pthread_t*)malloc(sizeof(pthread_t)*nofslices);
 
     for(i=0;i<nofslices;i++){
-        draw_status[i]=0;
+	work_status[i]=0;
         thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)(intptr_t)i);
         if(thread_status){
             perror("Fail create thread\n");
@@ -228,15 +228,6 @@ int main(int argc, char *argv[]) {
                 pthread_mutex_lock(&work_status);
             }
             pthread_mutex_unlock(&work_status);
-            for (e=0; e<nofslices; e++) {
-                if (draw_status[e]==1) {
-                    draw_status[e]=2;
-                    break;
-                }
-                if (e==nofslices-1) {
-                    e=-1;
-                }
-            }
             //start drawing
             for(i++, j=0;j<slices[e].imSteps;j++,y++){
                 for(x=0;x<slices[e].reSteps;x++){
@@ -244,10 +235,6 @@ int main(int argc, char *argv[]) {
                     drawPoint(x, y);
                 }
             }
-        }
-
-        for (i=0;i<nofslices; i++) {
-            draw_status=0;
         }
 
         /* get next focus/zoom point */
