@@ -26,7 +26,6 @@ int main(int argc, char *argv[]){
     last_train_capacity=num_passengers%train_capacity;
     noboard=0;
     flag=0;
-    printf("firsr %d last %d\n", train_trails, last_train_capacity);
 
 
     mtx_status=pthread_mutex_init(&mtx_end, NULL);
@@ -86,6 +85,7 @@ int main(int argc, char *argv[]){
 
     pthread_mutex_lock(&mtx_end);
 
+    sleep(5);
     pthread_mutex_destroy(&mtx_end);
     pthread_mutex_destroy(&mtx_board);
     pthread_mutex_destroy(&mtx_entry);
