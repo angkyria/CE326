@@ -117,7 +117,7 @@ char *pickColor(int v, int maxIterations) {
 }
 
 mandel_Pars *slices;
-int *res, maxIterations, *work_status, num_work, nofslices;
+int *res, maxIterations, num_work, nofslices, e;
 pthread_mutex_t work_status, draw;
 
 void *workers(void *i){
@@ -183,14 +183,13 @@ int main(int argc, char *argv[]) {
 
     slices = (mandel_Pars *) malloc(sizeof(mandel_Pars)*nofslices);
     res = (int *) malloc(sizeof(int)*pars.reSteps*pars.imSteps);
-    work_status=(int *)malloc(sizeof(int)*nofslices);
+
 
 
     //workers init
     thread_workers = (pthread_t*)malloc(sizeof(pthread_t)*nofslices);
 
     for(i=0;i<nofslices;i++){
-	work_status[i]=0;
         thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)(intptr_t)i);
         if(thread_status){
             perror("Fail create thread\n");
