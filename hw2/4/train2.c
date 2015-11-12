@@ -1,8 +1,6 @@
 #include <stdio.h>
-#include <string.h>
-#include <pthread.h>
-#include <errno.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <unistd.h>
 
 
@@ -10,11 +8,8 @@ void *train();
 
 void * passenger();
 
-
 int train_tail, last_train_capacity,noboard, train_capacity, flag;
 pthread_mutex_t mtx_boarding, mtx_board, mtx_end, mtx_ready, mtx_start;
-
-
 
 
 int main (int argc, char* argv[]){
@@ -29,9 +24,9 @@ int main (int argc, char* argv[]){
     printf ("How many passengers to boarding: ");
     scanf (" %d", &num_passengers);
 
-    train_tail= num_passengers/capacity;			//poses fores tha ksekinisei to treno (o pragmatikos arithmos einai train_tail+1)
-    last_train_capacity= num_passengers%capacity;			//posoi epivates perisevoun sto teleytaio treno
-    train_capacity= capacity;				//xwritikotita trenou
+    train_tail= num_passengers/capacity;
+    last_train_capacity= num_passengers%capacity;
+    train_capacity= capacity;
 
     mtx_status=pthread_mutex_init(&mtx_end, NULL);
     if (mtx_status) {
@@ -93,16 +88,16 @@ int main (int argc, char* argv[]){
     }
 
 
-    pthread_mutex_lock (&mtx_end);	//blokarisma mexri na oloklirwthei i diadikasia
+    pthread_mutex_lock (&mtx_end);
 
-    pthread_mutex_destroy (&mtx_end);	//diagrafi twn mutexes
+    pthread_mutex_destroy (&mtx_end);
     pthread_mutex_destroy (&mtx_boarding);
     pthread_mutex_destroy (&mtx_board);
     pthread_mutex_destroy (&mtx_ready);
     pthread_mutex_destroy (&mtx_start);
 
-    free (t_passengers);		//apeleftherwsi xwrou tou pinaka twn threads
-    return (0);
+    free (t_passengers);
+    return 0;
 
 }
 
@@ -111,10 +106,10 @@ void * train(){
 
     while (1){
         printf("Start boarding\n");
+
         pthread_mutex_lock (&mtx_start);
 
-
-								printf ("The train Start\n");
+        printf ("The train Start\n");
         printf ("Board passengers %d\n", train_capacity);
 
         train_tail--;
