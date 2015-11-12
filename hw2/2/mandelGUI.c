@@ -135,7 +135,6 @@ void *workers(void *i){
             if(num_work<=0)pthread_mutex_unlock(&draw);
             pthread_mutex_unlock(&work_status);
 
-            printf("thread no. %d finish cacl\n", num_work);
         }
 
     }
@@ -213,7 +212,7 @@ int main(int argc, char *argv[]) {
 
         mandel_Slice(&pars,nofslices,slices);
 
-        num_work=0;
+        num_work=-1;
         i=0;
         y=0;
         k=0;
@@ -234,7 +233,7 @@ int main(int argc, char *argv[]) {
                     drawPoint(x, y);
                 }
             }
-            printf("num_work %d\n", num_work);
+
         }
 
         /* get next focus/zoom point */
