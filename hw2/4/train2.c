@@ -174,9 +174,5 @@ void *passenger(){
     }
     
     return NULL;
-
+    
 }
-
-
-
-
