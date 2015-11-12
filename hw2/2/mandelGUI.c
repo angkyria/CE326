@@ -127,7 +127,7 @@ void *workers(void *i){
 
     while(1){
 
-        if((nofslices >= num_work) && (num_work>-1)){
+        if((nofslices => num_work) && (num_work>-1)){
             mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
             pthread_mutex_lock(&work_status);
             num_work++;
@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
 
         mandel_Slice(&pars,nofslices,slices);
 
-        num_work=-1;
+        num_work=0;
         i=0;
         y=0;
         k=0;
@@ -233,27 +233,26 @@ int main(int argc, char *argv[]) {
                     drawPoint(x, y);
                 }
             }
-
         }
 
         /* get next focus/zoom point */
-
+        
         getMouseCoords(&x,&y);
         xoff = x;
         yoff = WinH-y;
-
+        
         /* adjust region and zoom factor  */
-
+        
         reCenter = pars.reBeg + xoff*pars.reInc;
         imCenter = pars.imBeg + yoff*pars.imInc;
         pars.reInc = pars.reInc*ZoomStepFactor;
         pars.imInc = pars.imInc*ZoomStepFactor;
         pars.reBeg = reCenter - (WinW/2)*pars.reInc;
         pars.imBeg = imCenter - (WinH/2)*pars.imInc;
-
+        
         maxIterations = maxIterations*ZoomIterationFactor;
         level++;
-
+        
     }
     
     /* never reach this point; for cosmetic reasons */
