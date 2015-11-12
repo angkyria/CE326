@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
                     draw_status[e]=2;
                     break;
                 }
-                if (e==nofslices) {
+                if (e==nofslices-1) {
                     e=-1;
                 }
             }
