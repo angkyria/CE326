@@ -127,11 +127,11 @@ void *workers(void *i){
 
     while(1){
 
-        if((nofslices >= num_work) && (num_work>-1) && work_status[j]==0){
+        if((nofslices >= num_work) && (num_work>-1) && draw_status[j]==0){
             mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
             pthread_mutex_lock(&work_status);
             num_work++;
-            work_status[j]=1;
+            draw_status[j]=1;
             if(num_work<=0)pthread_mutex_unlock(&draw);
             pthread_mutex_unlock(&work_status);
 
@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
             pthread_mutex_unlock(&work_status);
             for (e=0; e<nofslices; e++) {
                 if (draw_status[e]==1) {
-                    draw_status[e]=1;
+                    draw_status[e]=2;
                     break;
                 }
                 if (e==nofslices) {
