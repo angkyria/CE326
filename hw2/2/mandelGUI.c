@@ -127,7 +127,7 @@ void *workers(void *i){
 
     while(1){
 
-        if((nofslices => num_work) && (num_work>-1)){
+        if((nofslices >= num_work) && (num_work>-1)){
             mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
             //while((work_status[j]==1)||(work_status[j]==2));//wait util we want to make calc
             pthread_mutex_lock(&work_status);
