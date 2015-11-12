@@ -129,7 +129,6 @@ void *workers(void *i){
 
         if(nofslices >= num_work){
             mandel_Calc(&slices[j],maxIterations,&res[j*slices[j].imSteps*slices[j].reSteps]);
-            //while((work_status[j]==1)||(work_status[j]==2));//wait util we want to make calc
             pthread_mutex_lock(&work_status);
             num_work++;
             e=j;
@@ -189,8 +188,7 @@ int main(int argc, char *argv[]) {
 
     //workers init
     thread_workers = (pthread_t*)malloc(sizeof(pthread_t)*nofslices);
-    //work_status=(int *)malloc(sizeof(int)*nofslices);
-    //for(i=0;i<nofslices;i++)work_status[i]=-1;
+
     for(i=0;i<nofslices;i++){
         thread_status=pthread_create(&thread_workers[i], NULL, workers, (void*)(intptr_t)i);
         if(thread_status){
@@ -236,7 +234,6 @@ int main(int argc, char *argv[]) {
                     drawPoint(x, y);
                 }
             }
-            printf("num_work %d\n", num_work);
         }
 
         /* get next focus/zoom point */
