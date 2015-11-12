@@ -227,6 +227,9 @@ int main(int argc, char *argv[]) {
             }
             pthread_mutex_unlock(&work_status);
             //start drawing
+            while (workers) {
+                <#statements#>
+            }
             for(i++, j=0;j<slices[e].imSteps;j++,y++){
                 for(x=0;x<slices[e].reSteps;x++){
                     setColor(pickColor(res[y*slices[e].reSteps+x],maxIterations));
