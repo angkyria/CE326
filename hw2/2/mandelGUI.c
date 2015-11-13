@@ -236,23 +236,23 @@ int main(int argc, char *argv[]) {
         }
 
         /* get next focus/zoom point */
-        
+
         getMouseCoords(&x,&y);
         xoff = x;
         yoff = WinH-y;
-        
+
         /* adjust region and zoom factor  */
-        
+
         reCenter = pars.reBeg + xoff*pars.reInc;
         imCenter = pars.imBeg + yoff*pars.imInc;
         pars.reInc = pars.reInc*ZoomStepFactor;
         pars.imInc = pars.imInc*ZoomStepFactor;
         pars.reBeg = reCenter - (WinW/2)*pars.reInc;
         pars.imBeg = imCenter - (WinH/2)*pars.imInc;
-        
+
         maxIterations = maxIterations*ZoomIterationFactor;
         level++;
-        
+
     }
     
     /* never reach this point; for cosmetic reasons */

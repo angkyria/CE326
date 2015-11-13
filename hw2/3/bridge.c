@@ -37,11 +37,11 @@ int main(int argc, char *argv[]){
         if( ( c == 'l') || ( c == 'L') ){
 
             car_tail = (char *) realloc( car_tail, (i+1) * sizeof(char));
-	    if(car_tail == NULL){
-		    free(car_tail);
-		    perror("Error reallocating memory");
-		    exit(3);
-	    }
+            if(car_tail == NULL){
+                free(car_tail);
+                perror("Error reallocating memory");
+                exit(3);
+            }
             car_tail[i] = 'l';
             size_of_left_tail++;
             i++;
@@ -105,17 +105,17 @@ int main(int argc, char *argv[]){
     }
 
     car = (pthread_t *) malloc(size_of_car_tail*sizeof(pthread_t));//allocate number of car threads
-    if (car == NULL){  
-	pthread_mutex_destroy(&mtxend);
+    if (car == NULL){
+        pthread_mutex_destroy(&mtxend);
         pthread_mutex_destroy(&mtx_dir_pri);
         pthread_mutex_destroy(&mtx_l_dir);
         pthread_mutex_destroy(&mtx_r_dir);
-	pthread_mutex_destroy(&mtxleave);
+        pthread_mutex_destroy(&mtxleave);
         free(car_tail);
         perror("Fail allocate car treads\n");
-        exit(2);                             
-    }	
-	    
+        exit(2);
+    }
+
     for(i=0;i<size_of_car_tail;i++){
         thread_status=pthread_create(&car[i],NULL, car_arrive, (void*)(intptr_t)i);//start n car thread
         if(thread_status){
@@ -160,7 +160,7 @@ void *car_arrive(void *i){
     }
     pthread_mutex_unlock(&mtx_dir_pri);
 
-    if(car_tail[j]=='r')//
+    if(car_tail[j]=='r')
         pthread_mutex_lock(&mtx_r_dir);
     else
         pthread_mutex_lock(&mtx_l_dir);
