@@ -5,13 +5,13 @@
 #include <unistd.h>
 
 #define RIGHT_PASS 10
- 
+
 void *left_car();
 void *right_car();
 void *monitor();
 void car_cross( char direction );
 void car_leave( char direction );
- 
+
 pthread_mutex_t end, mutex, left_m, right_m;
 pthread_cond_t left, right, monitor_c;
 
@@ -22,7 +22,7 @@ int size_of_tail, size_of_left_tail, size_of_rigth_tail, bridge_capacity, passed
 
 int main(int argc, char *argv[]){
 
-	pthread_t monitor_t, *left_t, *right_t;
+    pthread_t monitor_t, *left_t, *right_t;
     char c;
     int i, thread_status,mtx_status, cond_status;
 
@@ -63,101 +63,101 @@ int main(int argc, char *argv[]){
 
     mtx_status=pthread_mutex_init(&end, NULL);
     if(mtx_status){
-	    perror("Fail init mutex end\n");
-	    exit(1);
-    }               
+        perror("Fail init mutex end\n");
+        exit(1);
+    }
 
     mtx_status=pthread_mutex_init(&mutex, NULL);
     if(mtx_status){
-	    perror("Fail init mutex end\n");
-	    exit(1);
+        perror("Fail init mutex end\n");
+        exit(1);
     }
 
     mtx_status=pthread_mutex_init(&left_m, NULL);
     if(mtx_status){
-	    perror("Fail init mutex end\n");
-	    exit(1);
+        perror("Fail init mutex end\n");
+        exit(1);
     }
 
     mtx_status=pthread_mutex_init(&right_m, NULL);
     if(mtx_status){
-	    perror("Fail init mutex end\n");
-	    exit(1);
-    }               
+        perror("Fail init mutex end\n");
+        exit(1);
+    }
 
     cond_status=pthread_cond_init(&left, NULL);
     if(cond_status){
-	    perror("Fail init cond left\n");
-	    exit(1);
-    }                
+        perror("Fail init cond left\n");
+        exit(1);
+    }
 
     cond_status=pthread_cond_init(&right, NULL);
     if(cond_status){
-	    perror("Fail init cond right\n");
-	    exit(1);
+        perror("Fail init cond right\n");
+        exit(1);
     }
-                                     
+
     cond_status=pthread_cond_init(&monitor_c, NULL);
     if(cond_status){
-	    perror("Fail init cond monitor\n");
-	    exit(1);
-    }                                
+        perror("Fail init cond monitor\n");
+        exit(1);
+    }
 
 
 
     if(size_of_left_tail!=0){
-	    left_t=(pthread_t *) malloc(size_of_left_tail*sizeof(pthread_t));
-	    if(left_t==NULL){
+        left_t=(pthread_t *) malloc(size_of_left_tail*sizeof(pthread_t));
+        if(left_t==NULL){
 
-		    perror("Fail allocate left direction cars\n");
-		    exit(2);
-	    }
-	    for(i=0;i<size_of_left_tail;i++){
-             
-		    thread_status=pthread_create(&left_t[i], NULL, left_car, NULL);
-		    if(thread_status){
+            perror("Fail allocate left direction cars\n");
+            exit(2);
+        }
+        for(i=0;i<size_of_left_tail;i++){
 
-			    perror("Fail create left car\n");
-			    exit(2);
-		    }
-	    }
+            thread_status=pthread_create(&left_t[i], NULL, left_car, NULL);
+            if(thread_status){
+
+                perror("Fail create left car\n");
+                exit(2);
+            }
+        }
 
     }else{
-	    printf("No car on the left direction\n");
+        printf("No car on the left direction\n");
     }
 
     if(size_of_rigth_tail!=0){
-             right_t=(pthread_t *) malloc(size_of_rigth_tail*sizeof(pthread_t));
-	    if(right_t==NULL){
+        right_t=(pthread_t *) malloc(size_of_rigth_tail*sizeof(pthread_t));
+        if(right_t==NULL){
 
-		    perror("Fail allocate right direction cars\n");
-		    exit(2);
-	    }
-	    for(i=0;i<size_of_rigth_tail;i++){
-             
-		    thread_status=pthread_create(&right_t[i], NULL, right_car,NULL);
-		    if(thread_status){
+            perror("Fail allocate right direction cars\n");
+            exit(2);
+        }
+        for(i=0;i<size_of_rigth_tail;i++){
 
-			    perror("Fail create right car\n");
-			    exit(2);
-		    }
-	    }
+            thread_status=pthread_create(&right_t[i], NULL, right_car,NULL);
+            if(thread_status){
+
+                perror("Fail create right car\n");
+                exit(2);
+            }
+        }
     }else{
-	    printf("No car on the right direction\n");
+        printf("No car on the right direction\n");
     }
 
-    
+
 
     thread_status=pthread_create(&monitor_t,NULL, monitor, NULL);
     if(thread_status){
-	    perror("Fail create monitor threat\n");
-	    exit(2);
+        perror("Fail create monitor threat\n");
+        exit(2);
     }
 
     pthread_mutex_lock(&end);
-    
 
-                            sleep(5);
+
+    sleep(5);
     printf("Succefull pass\n");
     pthread_cond_destroy(&monitor_c);
     pthread_cond_destroy(&left);
@@ -172,107 +172,133 @@ int main(int argc, char *argv[]){
 }
 
 void *monitor(){
+    int flag;
+
+    pthread_mutex_lock(&mutex);
+    if(curr_dir=='l'){
+        pthread_cond_signal(&left);
+        pthread_cond_wait(&monitor_c, &mutex);
+    }else{
+        pthread_cond_signal(&right);
+        pthread_cond_wait(&monitor_c, &mutex);
+    }
+    pthread_mutex_unlock(&mutex);
+
+    while(passed_car!=size_of_tail){
 
 
-	pthread_mutex_lock(&mutex);
-	if(curr_dir=='l'){
-		pthread_cond_signal(&left);
-		pthread_cond_wait(&monitor_c, &mutex);
-	}else{
+        pthread_mutex_lock(&mutex);
+        if(size_of_left_tail==passed_left)
+            flag=1;
+        else if (size_of_rigth_tail==passed_right)
+            flag=2;
+        else
+            flag=0;
+    	if(car_right_pass==RIGHT_PASS){
+        if(flag==0){
+
+            if(curr_dir=='l'){
+                printf("Change direction from left to right\n");
+                curr_dir='r';
+                car_on_bridge=0;
+                car_right_pass=0;
+                pthread_cond_signal(&right);
+                pthread_cond_wait(&monitor_c, &mutex);
+            }else{
+                printf("Change directions from right to left\n");
+                curr_dir='l';
+                car_on_bridge=0;
+                car_right_pass=0;
+                pthread_cond_signal(&left);
+                pthread_cond_wait(&monitor_c, &mutex);
+            }
+        }
+	}
+
+        if(flag==1){
+		printf("We have car only at the right\n");
 		pthread_cond_signal(&right);
-		pthread_cond_wait(&monitor_c, &mutex);
 	}
-	pthread_mutex_unlock(&mutex);
-
-	while(passed_car!=size_of_tail){
-	
-	                                
-	pthread_mutex_lock(&mutex);
-	if(curr_dir=='l'){
-		printf("Change direction from left to right\n");
-		curr_dir='r';
-		car_on_bridge=0;
-		car_right_pass=0;
-		pthread_cond_signal(&right);
-		pthread_cond_wait(&monitor_c, &mutex);
-	}else{
-		printf("Change directions from right to left\n");
-		curr_dir='l';
-		car_on_bridge=0;
-		car_right_pass=0;
+	if(flag==2){
+		printf("We have car only at the left\n");
 		pthread_cond_signal(&left);
-		pthread_cond_wait(&monitor_c, &mutex);
-	}
-	pthread_mutex_unlock(&mutex);   
-	
 	}
 
+        pthread_mutex_unlock(&mutex);
 
-	printf("Hi i am monitor\n");
+    }
 
-	pthread_mutex_unlock(&end);
-	return NULL;
+
+    printf("Hi i am monitor\n");
+
+    pthread_mutex_unlock(&end);
+    return NULL;
 
 }
 
 void *left_car(){
- 	
 
-	pthread_mutex_lock(&left_m);
-	pthread_cond_wait(&left, &left_m);
-	pthread_mutex_unlock(&left_m);
-	
-        car_cross('l');
-	car_leave('l');
 
-	return NULL;
+    pthread_mutex_lock(&left_m);
+    pthread_cond_wait(&left, &left_m);
+    pthread_mutex_unlock(&left_m);
 
-}                   
+    car_cross('l');
+    car_leave('l');
+
+    return NULL;
+
+}
 void *right_car(){
- 	
-               
-	pthread_mutex_lock(&right_m);
-        pthread_cond_wait(&right, &right_m);
-	pthread_mutex_unlock(&right_m);
 
-	car_cross('r');
-	car_leave('r');
-	return NULL;
-}                   
+
+    pthread_mutex_lock(&right_m);
+    pthread_cond_wait(&right, &right_m);
+    pthread_mutex_unlock(&right_m);
+
+    car_cross('r');
+    car_leave('r');
+    return NULL;
+}
 
 
 void car_cross(char dir){
 
-	pthread_mutex_lock(&mutex);
-	car_on_bridge++;
-	car_right_pass++;
-	printf("%c car crossing the bridge\n", dir);
-	if((car_on_bridge!=bridge_capacity) && (curr_dir='l')){
-		pthread_cond_signal(&left);
-	}
-        if((car_on_bridge!=bridge_capacity) && (curr_dir='r')){
-		pthread_cond_signal(&right);
-	}  
-
-
+    pthread_mutex_lock(&mutex);
+    car_on_bridge++;
+    car_right_pass++;
+    printf("%c car crossing the bridge\n", dir);
+    if((car_on_bridge!=bridge_capacity) && (curr_dir='l')){
+        pthread_cond_signal(&left);
+    }
+    if((car_on_bridge!=bridge_capacity) && (curr_dir='r')){
+        pthread_cond_signal(&right);
+    }  
+    
+    
 }
 
 void car_leave(char dir){
-
-	printf("%c car leaving the bridge\n", dir);
-	passed_car++;
-	if(dir=='l')
-		passed_left++;
-	else
-		passed_right++;
-
-
-	if(car_right_pass==RIGHT_PASS){
-
-		pthread_cond_signal(&monitor_c);
-		
-	}
-
-        pthread_mutex_unlock(&mutex);
-        if(passed_car==size_of_tail)pthread_cond_signal(&monitor_c);
+    
+    printf("%c car leaving the bridge\n", dir);
+    passed_car++;
+    if(dir=='l')
+        passed_left++;
+    else
+        passed_right++;
+    
+    
+    
+    
+    if(bridge_capacity==car_on_bridge){
+        printf("Bridge full\n");
+        car_on_bridge=0;
+        if(dir=='l'){
+            pthread_cond_signal(&left);
+        }else{
+            pthread_cond_signal(&right);
+        }
+    }
+    pthread_mutex_unlock(&mutex);
+    pthread_cond_signal(&monitor_c);
 }
