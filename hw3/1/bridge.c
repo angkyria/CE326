@@ -169,6 +169,9 @@ void *monitor(){
 	}
 	pthread_mutex_unlock(&mutex);
 
+
+	printf("Hi i am monitor\n");
+
 	pthread_mutex_unlock(&end);
 	return NULL;
 
