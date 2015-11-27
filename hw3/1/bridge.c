@@ -118,7 +118,7 @@ int main(int argc, char *argv[]){
 		    perror("Fail allocate right direction cars\n");
 		    exit(2);
 	    }
-	    for(i=0;i<size_of_left_tail;i++){
+	    for(i=0;i<size_of_rigth_tail;i++){
              
 		    thread_status=pthread_create(&right_t[i], NULL, right_car, (void *)(intptr_t)i);
 		    if(thread_status){
