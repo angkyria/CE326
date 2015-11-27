@@ -16,7 +16,7 @@ pthread_mutex_t end, mutex;
 pthread_cond_t left, right, monitor_c;
 
 char *car_tail, curr_dir;
-int size_of_tail, size_of_left_tail, size_of_rigth_tail, bridge_capacity;
+int size_of_tail, size_of_left_tail, size_of_rigth_tail, bridge_capacity, passed_car, passed_right, passed_left;
 
 
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
     int i, thread_status,mtx_status, cond_status;
 
     printf("Give the cars directions. L or l for the left and R or r for the right direction: ");
-    i=0; size_of_left_tail=0; size_of_rigth_tail=0;
+    i=0; size_of_left_tail=0; size_of_rigth_tail=0;passed_left=0;passed_right=0;passed_car=0;
     do{
 
         c=getchar();
@@ -169,6 +169,8 @@ void *monitor(){
 	}
 	pthread_mutex_unlock(&mutex);
 
+	while(passed_car!=size_of_tail){}
+
 
 	printf("Hi i am monitor\n");
 
@@ -185,8 +187,10 @@ void *left_car( void *i){
 	pthread_mutex_lock(&mutex);
 	pthread_cond_wait(&left, &mutex);
 	pthread_mutex_unlock(&mutex);
-	printf("Hi i am left\n");
+	
 	pthread_cond_signal(&left);
+
+	passed_car++;
 
 	return NULL;
 
