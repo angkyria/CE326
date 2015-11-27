@@ -164,8 +164,8 @@ int main(int argc, char *argv[]){
     pthread_cond_destroy(&right);
     pthread_mutex_destroy(&mutex);
     pthread_mutex_destroy(&end);
-    free(left_t);
-    free(right_t);
+    if(size_of_left_tail!=0)free(left_t);
+    if(size_of_rigth_tail!=0)free(right_t);
     free(car_tail);
 
     return 0;
