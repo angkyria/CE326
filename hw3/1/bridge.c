@@ -191,6 +191,7 @@ void *left_car( void *i){
 	pthread_cond_signal(&left);
 
 	passed_car++;
+	if(passed_car==size_of_tail)pthread_cond_signal(&monitor_c); 
 
 	return NULL;
 
