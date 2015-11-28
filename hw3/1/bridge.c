@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#define RIGHT_PASS 10
+#define RIGHT_PASS 5
 
 void *left_car();
 void *right_car();
@@ -16,7 +16,7 @@ pthread_mutex_t end, mutex, left_m, right_m;
 pthread_cond_t left, right, monitor_c;
 
 char *car_tail, curr_dir;
-int size_of_tail, size_of_left_tail, size_of_rigth_tail, bridge_capacity, passed_car, passed_right, passed_left, car_on_bridge, car_right_pass;
+int size_of_tail, size_of_left_tail, size_of_rigth_tail, bridge_capacity, passed_car, passed_right, passed_left, car_on_bridge, car_right_pass,change_dir;
 
 
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
     int i, thread_status,mtx_status, cond_status;
 
     printf("Give the cars directions. L or l for the left and R or r for the right direction: ");
-    i=0; size_of_left_tail=0; size_of_rigth_tail=0;passed_left=0;passed_right=0;passed_car=0;car_on_bridge=0;car_right_pass=0;
+    i=0; size_of_left_tail=0; size_of_rigth_tail=0;passed_left=0;passed_right=0;passed_car=0;car_on_bridge=0;car_right_pass=0;change_dir=0;
     do{
 
         c=getchar();
@@ -195,7 +195,7 @@ void *monitor(){
             flag=2;
         else
             flag=0;
-    	if(car_right_pass==RIGHT_PASS){
+    	if(change_dir==1){
         if(flag==0){
 
             if(curr_dir=='l'){
@@ -205,7 +205,7 @@ void *monitor(){
                 car_right_pass=0;
                 pthread_cond_signal(&right);
                 pthread_cond_wait(&monitor_c, &mutex);
-            }else{
+            }else if(curr_dir=='r'){
                 printf("Change directions from right to left\n");
                 curr_dir='l';
                 car_on_bridge=0;
@@ -245,6 +245,7 @@ void *left_car(){
     pthread_cond_wait(&left, &left_m);
     pthread_mutex_unlock(&left_m);
 
+    sleep(1);
     car_cross('l');
     car_leave('l');
     return NULL;
@@ -256,7 +257,7 @@ void *right_car(){
     pthread_mutex_lock(&right_m);
     pthread_cond_wait(&right, &right_m);
     pthread_mutex_unlock(&right_m);
-
+    sleep(1);
     car_cross('r');
     car_leave('r');
     return NULL;
@@ -289,8 +290,6 @@ void car_leave(char dir){
         passed_right++;
     
     
-    
-    
     if(bridge_capacity==car_on_bridge){
         printf("Bridge full\n");
         car_on_bridge=0;
@@ -300,7 +299,12 @@ void car_leave(char dir){
             pthread_cond_signal(&right);
         }
     }
+    if(car_right_pass==RIGHT_PASS){
+    	    change_dir=1;
+	    pthread_cond_signal(&monitor_c);
+    }else{
+	    change_dir=0;
+	    pthread_cond_signal(&monitor_c);
+    }
     pthread_mutex_unlock(&mutex);
-    pthread_cond_signal(&monitor_c);
-    pthread_yield();
 }
