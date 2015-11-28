@@ -243,9 +243,10 @@ void *left_car(){
     pthread_cond_wait(&left, &left_m);
     pthread_mutex_unlock(&left_m);
 
+    pthread_mutex_lock(&left_m);
     car_cross('l');
     car_leave('l');
-
+    pthread_mutex_unlock(&left_m);
     return NULL;
 
 }
@@ -256,15 +257,17 @@ void *right_car(){
     pthread_cond_wait(&right, &right_m);
     pthread_mutex_unlock(&right_m);
 
+    pthread_mutex_lock(&right_m);
     car_cross('r');
     car_leave('r');
+    pthread_mutex_unlock(&right_m);
     return NULL;
 }
 
 
 void car_cross(char dir){
 
-    pthread_mutex_lock(&mutex);
+    //pthread_mutex_lock(&mutex);
     car_on_bridge++;
     car_right_pass++;
     printf("%c car crossing the bridge\n", dir);
@@ -299,6 +302,6 @@ void car_leave(char dir){
             pthread_cond_signal(&right);
         }
     }
-    pthread_mutex_unlock(&mutex);
+    //pthread_mutex_unlock(&mutex);
     pthread_cond_signal(&monitor_c);
 }
