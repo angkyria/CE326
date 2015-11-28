@@ -172,7 +172,8 @@ int main(int argc, char *argv[]){
 }
 
 void *monitor(){
-    int flag;
+    int flag, check;
+    check=0;
 
     pthread_mutex_lock(&mutex);
     if(curr_dir=='l'){
@@ -215,21 +216,22 @@ void *monitor(){
         }
 	}
 
-        if(flag==1){
+        if((flag==1)&&(check==0)){
+		check=1;
 		printf("We have car only at the right\n");
 		pthread_cond_signal(&right);
 	}
-	if(flag==2){
+	if((flag==2)&&(check==0)){
+		check=1;
 		printf("We have car only at the left\n");
 		pthread_cond_signal(&left);
 	}
-
+         
+         
         pthread_mutex_unlock(&mutex);
 
     }
 
-
-    printf("Hi i am monitor\n");
 
     pthread_mutex_unlock(&end);
     return NULL;
@@ -243,10 +245,8 @@ void *left_car(){
     pthread_cond_wait(&left, &left_m);
     pthread_mutex_unlock(&left_m);
 
-    pthread_mutex_lock(&left_m);
     car_cross('l');
     car_leave('l');
-    pthread_mutex_unlock(&left_m);
     return NULL;
 
 }
@@ -257,17 +257,15 @@ void *right_car(){
     pthread_cond_wait(&right, &right_m);
     pthread_mutex_unlock(&right_m);
 
-    pthread_mutex_lock(&right_m);
     car_cross('r');
     car_leave('r');
-    pthread_mutex_unlock(&right_m);
     return NULL;
 }
 
 
 void car_cross(char dir){
 
-    //pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mutex);
     car_on_bridge++;
     car_right_pass++;
     printf("%c car crossing the bridge\n", dir);
@@ -302,6 +300,7 @@ void car_leave(char dir){
             pthread_cond_signal(&right);
         }
     }
-    //pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
     pthread_cond_signal(&monitor_c);
+    pthread_yield();
 }
