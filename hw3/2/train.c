@@ -92,9 +92,9 @@ int main (int argc, char* argv[]){
 
     pthread_mutex_lock (&mtx_end);
 
-
     printf("!!!!!\n");
 
+    sleep(5);
     pthread_mutex_destroy (&mtx_end);
     pthread_mutex_destroy (&mtx_boarding);
     pthread_mutex_destroy (&mutex);
@@ -122,7 +122,6 @@ void * train(){
 
         printf ("The train Start\n");
         printf ("Board passengers %d\n", train_capacity);
-	sleep(1);
 
         train_tail--;
 
@@ -130,7 +129,6 @@ void * train(){
         if ((train_tail==0)&&(last_train_capacity==0)){
             printf ("No one else to board the stasion close\n");
             pthread_mutex_unlock (&mtx_end);
-	    printf("Station close");
             break;
 
         }
@@ -138,7 +136,6 @@ void * train(){
         if(flag==1){
             printf ("No one else to board the stasion close\n");
             pthread_mutex_unlock (&mtx_end);
-	    printf("Stasion close");
             break;
         }
 
@@ -164,7 +161,6 @@ void *passenger(){
     pthread_mutex_lock (&mtx_boarding);
     if ((train_tail==0)&&(last_train_capacity!=0)&&(flag==0)){
         printf("Last wagon of the train\n");
-	sleep(1);
         train_capacity=last_train_capacity;
         flag=1;
     }
@@ -173,26 +169,23 @@ void *passenger(){
 
     if (noboard!=train_capacity){
         printf("..");
-	sleep(1);
         pthread_cond_signal (&pass_c);
     }else {
         pthread_cond_signal(&train_c);
     }
 
     pthread_cond_wait(&train_c, &mtx_boarding);
-    sleep(1);
     noboard--;
     
     if (noboard==0){
         printf("\nFinish boarding\n");
-	sleep(2);
         pthread_cond_signal (&start_c);
     }else{
         pthread_cond_signal(&train_c);
 
     }
     pthread_mutex_unlock(&mtx_boarding);
-    
+
     return NULL;
     
 }
