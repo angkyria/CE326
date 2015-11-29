@@ -92,7 +92,9 @@ int main (int argc, char* argv[]){
 
     pthread_mutex_lock (&mtx_end);
 
-    sleep(2);
+
+    sleep(5);
+    printf("!!!!!\n");
 
     pthread_mutex_destroy (&mtx_end);
     pthread_mutex_destroy (&mtx_boarding);
@@ -128,6 +130,7 @@ void * train(){
         if ((train_tail==0)&&(last_train_capacity==0)){
             printf ("No one else to board the stasion close\n");
             pthread_mutex_unlock (&mtx_end);
+	    printf("Station close");
             break;
 
         }
@@ -135,6 +138,7 @@ void * train(){
         if(flag==1){
             printf ("No one else to board the stasion close\n");
             pthread_mutex_unlock (&mtx_end);
+	    printf("Stasion close");
             break;
         }
 
@@ -156,7 +160,7 @@ void *passenger(){
 	pthread_mutex_lock(&mutex);
 	pthread_cond_wait(&pass_c, &mutex);
 	pthread_mutex_unlock(&mutex);
-	sleep(1);
+
     pthread_mutex_lock (&mtx_boarding);
     if ((train_tail==0)&&(last_train_capacity!=0)&&(flag==0)){
         printf("Last wagon of the train\n");
