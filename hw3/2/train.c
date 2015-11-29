@@ -9,11 +9,12 @@ void *train();
 void * passenger();
 
 int train_tail, last_train_capacity,noboard, train_capacity, flag;
-pthread_mutex_t mtx_boarding, mtx_board, mtx_end, mtx_ready, mtx_start;
+pthread_mutex_t mtx_boarding, mtx_start, mtx_end, mutex;
+pthread_cond_t pass_c, start_c, train_c;
 
 
 int main (int argc, char* argv[]){
-    int i, num_passengers, t_status, capacity, mtx_status;
+    int i, num_passengers, t_status, capacity, mtx_status, cond_status;
     pthread_t *t_passengers, t_train;
 
 				noboard=0;
@@ -34,13 +35,6 @@ int main (int argc, char* argv[]){
         exit(1);
     }
 
-    mtx_status=pthread_mutex_init(&mtx_ready, NULL);
-    if (mtx_status) {
-        perror("Fail create mutex\n");
-        exit(1);
-    }
-
-
     mtx_status=pthread_mutex_init(&mtx_start, NULL);
     if (mtx_status) {
         perror("Fail create mutex\n");
@@ -53,24 +47,27 @@ int main (int argc, char* argv[]){
         exit(1);
     }
 
-    mtx_status=pthread_mutex_init(&mtx_board, NULL);
+    mtx_status=pthread_mutex_init(&mutex, NULL);
     if (mtx_status) {
         perror("Fail create mutex\n");
         exit(1);
     }
 
-    pthread_mutex_lock (&mtx_end);
-    pthread_mutex_lock (&mtx_ready);
-    pthread_mutex_lock (&mtx_start);
-    pthread_mutex_lock (&mtx_board);
-
-
-    t_status = pthread_create( &t_train, NULL, train , NULL);
-    if(t_status){
-        perror("Fail create thread train");
-        exit(3);
-    }
-
+    cond_status=pthread_cond_init(&pass_c,NULL);
+     if (cond_status) {
+        perror("Fail create cond\n");
+        exit(1);
+    }        
+    cond_status=pthread_cond_init(&pass_c,NULL);
+     if (cond_status) {
+        perror("Fail create cond\n");
+        exit(1);
+    }        
+     cond_status=pthread_cond_init(&train_c,NULL);
+     if (cond_status) {
+        perror("Fail create cond\n");
+        exit(1);
+    } 
     t_passengers= (pthread_t*)malloc(sizeof(pthread_t)*(num_passengers+1));
     if (t_passengers==NULL) {
         perror("Fail allocation memory");
@@ -86,15 +83,22 @@ int main (int argc, char* argv[]){
         }
 
     }
-
+ 
+    t_status = pthread_create( &t_train, NULL, train , NULL);
+    if(t_status){
+        perror("Fail create thread train");
+        exit(3);
+    }                                  
 
     pthread_mutex_lock (&mtx_end);
 
     pthread_mutex_destroy (&mtx_end);
     pthread_mutex_destroy (&mtx_boarding);
-    pthread_mutex_destroy (&mtx_board);
-    pthread_mutex_destroy (&mtx_ready);
+    pthread_mutex_destroy (&mutex);
     pthread_mutex_destroy (&mtx_start);
+    pthread_cond_destroy(&pass_c);
+    pthread_cond_destroy(&start_c);
+    pthread_cond_destroy(&train_c);  
 
     free (t_passengers);
     return 0;
@@ -103,9 +107,13 @@ int main (int argc, char* argv[]){
 
 
 void * train(){
+	pthread_mutex_lock(&mutex);
+        printf("Start boarding\n");
+	pthread_cond_signal(&pass_c);
+	pthread_cond_wait(&start_c, &mutex);
+	pthread_mutex_unlock(&mutex);
 
     while (1){
-        printf("Start boarding\n");
 
         pthread_mutex_lock (&mtx_start);
 
@@ -130,16 +138,22 @@ void * train(){
 
         else{
             printf ("Going at the start line\n");
-            pthread_mutex_unlock (&mtx_boarding);
-
+            pthread_cond_signal(&pass_c);
+	    
         }
-
+         pthread_cond_wait(&start_c, &mtx_start);
+	    pthread_mutex_unlock(&mtx_start);
+             
     }
 
     return NULL;
 }
 
 void *passenger(){
+
+	pthread_mutex_lock(&mutex);
+	pthread_cond_wait(&pass_c, &mutex);
+	pthread_mutex_unlock(&mutex);
 
     pthread_mutex_lock (&mtx_boarding);
     if ((train_tail==0)&&(last_train_capacity!=0)&&(flag==0)){
@@ -152,21 +166,23 @@ void *passenger(){
 
     if (noboard!=train_capacity){
         printf("..");
-        pthread_mutex_unlock (&mtx_boarding);
+        pthread_cond_signal (&pass_c);
     }else {
-        pthread_mutex_unlock(&mtx_board);
+        pthread_cond_signal(&train_c);
     }
 
-    pthread_mutex_lock(&mtx_board);
+    pthread_cond_wait(&train_c, &mtx_boarding);
 
     noboard--;
     
     if (noboard==0){
         printf("\nFinish boarding\n");
-        pthread_mutex_unlock (&mtx_start);
+        pthread_cond_signal (&start_c);
     }else{
-        pthread_mutex_unlock (&mtx_board);
+        pthread_cond_signal(&train_c);
+
     }
+    pthread_mutex_unlock(&mtx_boarding);
     
     return NULL;
     
