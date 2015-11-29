@@ -156,7 +156,7 @@ void *passenger(){
 	pthread_mutex_lock(&mutex);
 	pthread_cond_wait(&pass_c, &mutex);
 	pthread_mutex_unlock(&mutex);
-
+	sleep(1);
     pthread_mutex_lock (&mtx_boarding);
     if ((train_tail==0)&&(last_train_capacity!=0)&&(flag==0)){
         printf("Last wagon of the train\n");
