@@ -92,6 +92,8 @@ int main (int argc, char* argv[]){
 
     pthread_mutex_lock (&mtx_end);
 
+    sleep(2);
+
     pthread_mutex_destroy (&mtx_end);
     pthread_mutex_destroy (&mtx_boarding);
     pthread_mutex_destroy (&mutex);
